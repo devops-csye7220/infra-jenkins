@@ -1,0 +1,79 @@
+---
+- name: "Gather Subnet facts"
+  ec2_vpc_subnet_info:
+    profile: "{{ aws_profile }}"
+    region: "{{ aws_region }}"
+    filters:
+      "tag:Type": "jenkins"
+  register: jenkins_existing_subnets
+
+- name: "Gather Security Groups facts"
+  ec2_group_info:
+    profile: "{{ aws_profile }}"
+    region: "{{ aws_region }}"
+    filters:
+      "tag:Type": "jenkins"
+  register: jenkins_existing_security_groups
+
+- name: "Launch EC2 Instance for Jenkins"
+  ec2:
+    profile: "{{ aws_profile }}"
+    region: "{{ aws_region }}"
+    key_name: "{{ ssh_key_name }}"
+    instance_type: "{{ instance_type_name }}"
+    image: "{{ ami_id }}"
+    wait: yes
+    group: "{{ jenkins_existing_security_groups.security_groups[0].group_name }}"
+    vpc_subnet_id: "{{ jenkins_existing_subnets.subnets[0].subnet_id }}"
+    assign_public_ip: no
+    exact_count: 1
+    count_tag:
+      Name: csye7125-jenkins-ec2
+    instance_tags:
+      Name: csye7125-jenkins-ec2
+      App: jenkins
+      Type: jenkins
+  register: jenkins_ec2
+
+- name: "Gather EC2 instance facts"
+  ec2_instance_info:
+    profile: "{{ aws_profile }}"
+    region: "{{ aws_region }}"
+    filters:
+      "tag:Type": "jenkins"
+      "instance-state-name": "running"
+  register: jenkins_existing_ec2_instances
+
+- name: Associate an elastic IP with the EC2 instance
+  ec2_eip:
+    profile: "{{ aws_profile }}"
+    region: "{{ aws_region }}"
+    device_id: "{{ jenkins_existing_ec2_instances.instances[0].instance_id }}"
+    ip: "{{ elastic_ip }}"
+  when: jenkins_ec2
+
+- name: Update record with EIP
+  route53:
+    state: present
+    zone: "{{  domain_name }}"
+    record: "{{ jenkins_domain }}"
+    type: A
+    ttl: 60
+    value: "{{ elastic_ip }}"
+    wait: yes
+    profile: "{{ aws_profile }}"
+    overwrite: yes
+
+- name: Add Elastic IP to host group
+  add_host: hostname={{ elastic_ip }} groups=jenkins
+
+- name: Delete Elastic IP from known_hosts
+  command: "ssh-keygen -f \"~/.ssh/known_hosts\" -R \"{{ elastic_ip }}\""
+  ignore_errors: true
+
+- name: SSH Wait
+  wait_for: host="{{ elastic_ip }}" port=22 delay=10 timeout=300
+
+- name: Add Elastic IP to known_hosts
+  connection: local
+  shell: "ssh-keyscan -H {{ elastic_ip }} >> ~/.ssh/known_hosts"

@@ -1,0 +1,1 @@
+## Playbook for copying local kubectl config to the jenkins server

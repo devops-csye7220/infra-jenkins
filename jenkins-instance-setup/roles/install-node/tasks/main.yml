@@ -1,0 +1,50 @@
+---
+
+- name: Ensure apt-transport-https is installed.
+  become: yes
+  apt: name=apt-transport-https state=present
+
+- name: Install the gpg key for nodejs LTS
+  apt_key:
+    url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+    state: present
+
+- name: Install the nodejs LTS repos
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node_14.x {{ ansible_distribution_release }} main"
+    state: present
+    update_cache: yes
+
+- name: Install the nodejs
+  apt:
+    name: nodejs
+    state: present
+
+- name: npm self-update
+  command: npm install npm@latest -g
+
+- name: Install Semantic Release
+  command: npm install -g semantic-release
+
+- name: Install Semantic Release Exec
+  command: npm install -g @semantic-release/exec
+
+- name: Install Semantic Release changelog eslint
+  command: npm install -g conventional-changelog-eslint
+
+- name: Install the nodejs
+  apt:
+    name: golang-go
+    state: present
+
+- name: Get github release package
+  command: wget https://github.com/github-release/github-release/releases/download/v0.10.0/linux-amd64-github-release.bz2
+
+- name: Unzip package
+  command: bzip2 -d linux-amd64-github-release.bz2
+  
+- name: Change permission
+  command: chmod +x linux-amd64-github-release
+  
+- name: Move to bin
+  command: mv ./linux-amd64-github-release /usr/bin/github-release

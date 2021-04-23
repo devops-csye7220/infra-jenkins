@@ -1,0 +1,32 @@
+---
+- name: "Gather EC2 instance facts"
+  ec2_instance_info:
+    profile: "{{ aws_profile }}"
+    region: "{{ aws_region }}"
+    filters:
+      '{
+        "tag:{{ terminate_tag_key }}": "{{ terminate_tag_value }}",
+        "instance-state-name": [ "running", "stopped" ]
+      }'
+  register: jenkins_existing_ec2_instances
+
+- name: Terminate EC2 Instance
+  ec2:
+    state: absent
+    region: "{{ aws_region }}"
+    profile: "{{ aws_profile }}"
+    instance_id: "{{ jenkins_existing_ec2_instances.instances[0].instance_id }}"
+    wait: yes
+  when: jenkins_existing_ec2_instances.instances
+
+#- name: Remove record with EIP
+#  route53:
+#    state: absent
+#    zone: "{{ domain_name }}"
+#    record: "{{ jenkins_domain }}"
+#    type: A
+#    ttl: 60
+#    value: "{{ elastic_ip }}"
+#    wait: yes
+#    profile: "{{ aws_profile }}"
+#    overwrite: yes

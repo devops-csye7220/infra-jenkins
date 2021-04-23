@@ -1,0 +1,20 @@
+---
+- name: Check for exisiting helm installation
+  stat:
+    path: /usr/local/bin/helm
+  register: helm
+
+- name: Download and unzip helm binary
+  unarchive:
+    src: "{{ helm_download_path }}"
+    dest: /tmp
+    remote_src: yes
+    owner: root
+    group: root
+    mode: 0755
+  become: true
+  when: helm.stat.exists == false
+
+- name: Move helm to bin
+  command: sudo mv /tmp/linux-amd64/helm /usr/local/bin/helm
+  when: helm.stat.exists == false

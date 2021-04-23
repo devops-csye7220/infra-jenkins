@@ -1,0 +1,3 @@
+---
+
+#state: "{{ 'present' if action=='create' else 'absent' }}"

@@ -1,0 +1,68 @@
+---
+- name: "Gather VPC Info"
+  ec2_vpc_net_info:
+    region: "{{ aws_region }}"
+    profile: "{{ aws_profile }}"
+    filters:
+      "tag:Name": "csye7125-jenkins-{{ aws_region }}-vpc"
+  register: vpc
+
+- name: "Delete vpc security groups"
+  ec2_group:
+    state: absent
+    profile: "{{ aws_profile }}"
+    region: "{{ aws_region }}"
+    name: "csye7125-jenkins_sg_{{ vpc.vpcs[0].id }}"
+    description: "jenkins security group for {{ vpc.vpcs[0].id }}"
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+  register: jenkins_sg
+
+- name: Delete subnets
+  ec2_vpc_subnet:
+    state: absent
+    profile: "{{ aws_profile }}"
+    region: "{{ aws_region }}"
+    az: "{{ item.value.az }}"
+    cidr: "{{ item.value.cidr }}"
+    vpc_id: "{{ vpc.vpcs[0].id }}"
+    tags:
+      Name: "csye7125-jenkins_{{ item.value.az }}"
+  with_dict: "{{ vpc_subnets }}"
+  register: jenkins_vpc_subnets
+
+- name: Delete Internet Gateway
+  ec2_vpc_igw:
+    state: absent
+    profile: "{{ aws_profile }}"
+    region: "{{ aws_region }}"
+    vpc_id: "{{ vpc.vpcs[0].id }}"
+    tags:
+      Name: "csye7125-jenkins-igw"
+  register: jenkins_igw
+
+- name: Delete VPC for Jenkins
+  ec2_vpc_net:
+    state: absent
+    region: "{{ aws_region }}"
+    name: "{{ vpc_name }}"
+    cidr_block: "{{ vpc_cidr }}"
+    dns_hostnames: yes
+    dns_support: yes
+    multi_ok: no
+    tenancy: default
+    profile: "{{ aws_profile }}"
+    tags:
+      Name: "jenkins-vpc"
+  register: jenkins_vpc

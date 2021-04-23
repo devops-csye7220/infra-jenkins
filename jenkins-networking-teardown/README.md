@@ -1,0 +1,1 @@
+## Playbook for destroying the AWS infrastructure 

@@ -1,0 +1,9 @@
+{
+    "aws_profile": "",
+    "aws_region": "us-east-1",
+    "ami_id": "ami-09edb51a308574de0",
+    "ssh_key_name": "",
+    "instance_type_name": "t2.micro",
+    "terminate_tag_key": "App",
+    "terminate_tag_value": "jenkins"
+}

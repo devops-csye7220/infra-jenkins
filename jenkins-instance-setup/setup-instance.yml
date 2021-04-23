@@ -1,0 +1,17 @@
+---
+- name: "Setup EC2 Instance"
+  hosts: localhost
+  gather_facts: no
+  roles:
+   - { role: 'setup-role'}
+
+- name: "Install Dependencies"
+  hosts: jenkins
+  user: ubuntu
+  gather_facts: true
+  become: true
+  roles:
+    - { role: 'roles/installation' }
+    - { role: 'roles/install-docker' }
+    - { role: 'roles/install-helm' }
+    - { role: 'roles/install-node' }
