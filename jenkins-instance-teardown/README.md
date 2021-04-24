@@ -1,1 +1,0 @@
-## Playbook for terminating the EC2 instance hosting Jenkins

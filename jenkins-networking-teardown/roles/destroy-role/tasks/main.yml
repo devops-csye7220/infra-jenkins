@@ -4,7 +4,7 @@
     region: "{{ aws_region }}"
     profile: "{{ aws_profile }}"
     filters:
-      "tag:Name": "csye7125-jenkins-{{ aws_region }}-vpc"
+      "tag:Name": "csye7220-jenkins-{{ aws_region }}-vpc"
   register: vpc
 
 - name: "Delete vpc security groups"
@@ -12,7 +12,7 @@
     state: absent
     profile: "{{ aws_profile }}"
     region: "{{ aws_region }}"
-    name: "csye7125-jenkins_sg_{{ vpc.vpcs[0].id }}"
+    name: "csye7220-jenkins_sg_{{ vpc.vpcs[0].id }}"
     description: "jenkins security group for {{ vpc.vpcs[0].id }}"
     rules:
       - proto: tcp
@@ -38,7 +38,7 @@
     cidr: "{{ item.value.cidr }}"
     vpc_id: "{{ vpc.vpcs[0].id }}"
     tags:
-      Name: "csye7125-jenkins_{{ item.value.az }}"
+      Name: "csye7220-jenkins_{{ item.value.az }}"
   with_dict: "{{ vpc_subnets }}"
   register: jenkins_vpc_subnets
 
@@ -49,7 +49,7 @@
     region: "{{ aws_region }}"
     vpc_id: "{{ vpc.vpcs[0].id }}"
     tags:
-      Name: "csye7125-jenkins-igw"
+      Name: "csye7220-jenkins-igw"
   register: jenkins_igw
 
 - name: Delete VPC for Jenkins

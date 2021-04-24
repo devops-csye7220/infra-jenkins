@@ -1,7 +1,7 @@
 ---
 aws_region: us-east-1
 aws_profile: root
-vpc_name: "csye7125-jenkins-{{ aws_region }}-vpc"
+vpc_name: "csye7220-jenkins-{{ aws_region }}-vpc"
 vpc_cidr: 10.0.0.0/16
 vpc_subnets:
   private-1:

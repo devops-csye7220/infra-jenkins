@@ -1,6 +1,5 @@
 ---
 aws_region: us-east-1
 aws_profile: root
-ami_id: ami-0df0ff43be195e9fa
-ssh_key_name: csye7125-laptop
+ami_id: ami-0b63535f2b5a9749b
 instance_type_name: t2.micro

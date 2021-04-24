@@ -12,7 +12,8 @@
     "ssh_key_name": "",
     "instance_type_name": "t2.micro",
     "terminate_tag_key": "App",
-    "terminate_tag_value": "jenkins"
+    "terminate_tag_value": "jenkins",
+    "elastic_ip": "54.164.79.68"
 }
 ```
 
@@ -35,11 +36,13 @@ ansible-playbook jenkins-networking-teardown/teardown-networking.yml --extra-var
 ### Setup
 
 ```bash
-ansible-playbook jenkins-instance-setup/setup-instance.yml --extra-vars "@extra_vars_jenkins-local.json" -vvv
+ansible-playbook jenkins-instance-setup/setup-instance.yml --private-key "~/.ssh/aws-mac" --extra-vars "@extra_vars_jenkins-local.json" -vvv
 ```
 
 ### Teardown
 
 ```bash
-ansible-playbook jenkins-instance-teardown/teardown-instance.yml --extra-vars "@extra_vars_jenkins-local.json" -vvv
+ansible-playbook jenkins-instance-teardown/teardown-instance.yml --private-key "~/.ssh/aws-mac" --extra-vars "@extra_vars_jenkins-local.json" -vvv
 ```
+
+### 

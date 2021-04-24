@@ -28,9 +28,9 @@
     assign_public_ip: no
     exact_count: 1
     count_tag:
-      Name: csye7125-jenkins-ec2
+      Name: csye7220-jenkins-ec2
     instance_tags:
-      Name: csye7125-jenkins-ec2
+      Name: csye7220-jenkins-ec2
       App: jenkins
       Type: jenkins
   register: jenkins_ec2
@@ -51,18 +51,6 @@
     device_id: "{{ jenkins_existing_ec2_instances.instances[0].instance_id }}"
     ip: "{{ elastic_ip }}"
   when: jenkins_ec2
-
-- name: Update record with EIP
-  route53:
-    state: present
-    zone: "{{  domain_name }}"
-    record: "{{ jenkins_domain }}"
-    type: A
-    ttl: 60
-    value: "{{ elastic_ip }}"
-    wait: yes
-    profile: "{{ aws_profile }}"
-    overwrite: yes
 
 - name: Add Elastic IP to host group
   add_host: hostname={{ elastic_ip }} groups=jenkins

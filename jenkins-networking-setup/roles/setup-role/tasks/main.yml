@@ -11,7 +11,7 @@
     tenancy: default
     profile: "{{ aws_profile }}"
     tags:
-      Name: "csye7125-jenkins-vpc"
+      Name: "csye7220-jenkins-vpc"
   register: jenkins_vpc
 
 - name: Create Internet Gateway
@@ -21,7 +21,7 @@
     region: "{{ aws_region }}"
     vpc_id: "{{ jenkins_vpc.vpc.id }}"
     tags:
-      Name: "csye7125-jenkins-igw"
+      Name: "csye7220-jenkins-igw"
   register: jenkins_igw
 
 - name: Create subnets
@@ -33,7 +33,7 @@
     vpc_id: "{{ jenkins_vpc.vpc.id }}"
     cidr: "{{ item.value.cidr }}"
     tags:
-      Name: "csye7125-jenkins_{{ item.value.az }}"
+      Name: "csye7220-jenkins_{{ item.value.az }}"
       Type: "jenkins"
   with_dict: "{{ vpc_subnets }}"
   register: jenkins_vpc_subnets
@@ -55,7 +55,7 @@
     profile: "{{ aws_profile }}"
     region: "{{ aws_region }}"
     tags:
-      Name: "csye7125-jenkins_route_table_{{ jenkins_vpc.vpc.id }}"
+      Name: "csye7220-jenkins_route_table_{{ jenkins_vpc.vpc.id }}"
     subnets:
       - "{{ jenkins_vpc_subnets.results[0].subnet.id }}"
       - "{{ jenkins_vpc_subnets.results[1].subnet.id }}"
@@ -70,10 +70,10 @@
     profile: "{{ aws_profile}}"
     region: "{{ aws_region }}"
     vpc_id: "{{ jenkins_vpc.vpc.id }}"
-    name: "csye7125-jenkins_sg_{{ jenkins_vpc.vpc.id }}"
+    name: "csye7220-jenkins_sg_{{ jenkins_vpc.vpc.id }}"
     description: "jenkins security group for {{ jenkins_vpc.vpc.id }}"
     tags:
-      Name: "csye7125-jenkins_sg_{{ jenkins_vpc.vpc.id }}"
+      Name: "csye7220-jenkins_sg_{{ jenkins_vpc.vpc.id }}"
       Type: jenkins
     rules:
       - proto: tcp
