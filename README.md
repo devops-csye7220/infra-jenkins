@@ -8,9 +8,9 @@
 {
     "aws_profile": "",
     "aws_region": "us-east-1",
-    "ami_id": "ami-09edb51a308574de0",
+    "ami_id": "ami-0e057bdeb73803a0b",
     "ssh_key_name": "",
-    "instance_type_name": "t2.micro",
+    "instance_type_name": "t2.medium",
     "terminate_tag_key": "App",
     "terminate_tag_value": "jenkins",
     "elastic_ip": "54.164.79.68"

@@ -18,15 +18,4 @@
     instance_id: "{{ jenkins_existing_ec2_instances.instances[0].instance_id }}"
     wait: yes
   when: jenkins_existing_ec2_instances.instances
-
-#- name: Remove record with EIP
-#  route53:
-#    state: absent
-#    zone: "{{ domain_name }}"
-#    record: "{{ jenkins_domain }}"
-#    type: A
-#    ttl: 60
-#    value: "{{ elastic_ip }}"
-#    wait: yes
-#    profile: "{{ aws_profile }}"
-#    overwrite: yes
+  
